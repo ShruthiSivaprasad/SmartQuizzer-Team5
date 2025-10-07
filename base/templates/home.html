@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartQuizzer - Adaptive Quiz Generator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      color: #2c3e50;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #007bff;
+      color: white;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 80px 20px;
+      background: linear-gradient(135deg, #e9f1ff, #ffffff);
+      flex: 1;
+    }
+
+    .hero h2 {
+      font-size: 42px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      max-width: 700px;
+      margin: 0 auto 25px;
+      line-height: 1.6;
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    .btn-login {
+      background-color: #007bff;
+      color: white;
+    }
+    .btn-login:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-register {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-register:hover {
+      background-color: #1e7e34;
+    }
+
+    .btn-admin {
+      background-color: #dc3545;
+      color: white;
+    }
+    .btn-admin:hover {
+      background-color: #c82333;
+    }
+
+    .features {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 60px 20px;
+      background: white;
+    }
+
+    .feature {
+      max-width: 280px;
+      text-align: center;
+      margin: 20px;
+    }
+
+    .feature img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 15px;
+    }
+
+    .feature h3 {
+      margin-bottom: 10px;
+      color: #007bff;
+    }
+
+    footer {
+      background: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      font-size: 14px;
+      margin-top: auto; /* keeps footer at bottom */
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SmartQuizzer</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/login/">Login</a>
+      <a href="/register/">Register</a>
+      <a href="/admin/">Admin</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Adaptive AI-based Quiz Generator</h2>
+    <p>
+      SmartQuizzer creates personalized quizzes just for you. 
+      It adapts difficulty based on your progress, tracks performance, and helps you practice smarter.
+    </p>
+    <div class="buttons">
+      <a href="/login/"><button class="btn btn-login">Login</button></a>
+      <a href="/register/"><button class="btn btn-register">Register</button></a>
+      <a href="/admin/"><button class="btn btn-admin">Admin</button></a>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="feature">
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="AI Icon">
+      <h3>AI Quiz Generation</h3>
+      <p>Generate topic-based quizzes instantly with AI-powered question creation.</p>
+    </div>
+    <div class="feature">
+      <img src="https://cdn-icons-png.flaticon.com/512/3655/3655583.png" alt="Difficulty Icon">
+      <h3>Adaptive Difficulty</h3>
+      <p>Questions adjust to your learning level — easier if you're stuck, harder if you're excelling.</p>
+    </div>
+    <div class="feature">
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135823.png" alt="Progress Icon">
+      <h3>Track Progress</h3>
+      <p>Get insights on your strengths and weaknesses to improve continuously.</p>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 SmartQuizzer
+  </footer>
+</body>
+</html>

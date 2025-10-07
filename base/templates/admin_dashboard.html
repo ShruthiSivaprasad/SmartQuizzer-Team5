@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SmartQuizzer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #2d3748;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .topics-section, .users-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2d3748;
+        }
+
+        .section-count {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .data-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .difficulty-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-easy {
+            background: #f0fff4;
+            color: #38a169;
+        }
+
+        .difficulty-medium {
+            background: #fffbeb;
+            color: #d69e2e;
+        }
+
+        .difficulty-hard {
+            background: #fed7d7;
+            color: #e53e3e;
+        }
+
+        .pdf-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .pdf-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-pdf {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #f0fff4;
+            color: #38a169;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background-color: #fee;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #a0aec0;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+        
+        .btn-view-questions {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-view-questions:hover {
+            background: #5a6acf;
+            transform: translateY(-2px);
+        }
+        
+        .question-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid #667eea;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .question-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .question-option {
+            padding: 0.5rem;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .question-option.correct {
+            background: #f0fff4;
+            border-color: #9ae6b4;
+            font-weight: 600;
+        }
+        
+        .no-questions {
+            text-align: center;
+            padding: 2rem;
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links a {
+                margin: 0 1rem;
+            }
+
+            .data-table {
+                font-size: 0.9rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.5rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-brand">
+                <i class="fas fa-shield-alt"></i> Admin Dashboard
+            </div>
+            <div class="nav-links">
+                <span style="color: white; margin-right: 1rem;">
+                    <i class="fas fa-user-shield"></i> {{ admin_username }}
+                </span>
+                <a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
+                <a href="{% url 'admin_logout' %}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="welcome-section">
+            <h1 class="welcome-title">Admin Dashboard 🚀</h1>
+            <p class="welcome-subtitle">Manage topics, users, upload documents, and oversee the learning platform</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_topics }}</div>
+                <div class="stat-label">Total Topics</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_users }}</div>
+                <div class="stat-label">Registered Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ topics_with_pdfs }}</div>
+                <div class="stat-label">Topics with PDFs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ easy_topics|add:medium_topics|add:hard_topics }}</div>
+                <div class="stat-label">Active Topics</div>
+            </div>
+        </div>
+
+        <div style="max-width: 600px; margin: 0 auto;">
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-file-upload"></i>
+                    Upload MCQ PDF (UI)
+                </h2>
+                <form method="post" action="{% url 'upload_mcq' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="topic">Topic Name</label>
+                        <input type="text" id="topic" name="topic" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sub_topic">Sub Topic Name (Optional)</label>
+                        <input type="text" id="sub_topic" name="sub_topic" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty_level">Difficulty Level</label>
+                        <select id="difficulty_level" name="difficulty_level" class="form-control">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mcq_pdf">MCQ PDF</label>
+                        <input type="file" id="mcq_pdf" name="pdf" accept="application/pdf" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload & Insert MCQs
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('topics')">Topics Management</div>
+            <div class="tab" onclick="showTab('users')">User Management</div>
+        </div>
+
+        <div id="topics-tab" class="tab-content active">
+            <div class="topics-section">
+                <div class="section-header">
+                    <h2 class="section-title">All Topics</h2>
+                    <div class="section-count">{{ total_topics }} Topics</div>
+                </div>
+                
+                {% if mcq_topics %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Topic Name</th>
+                                <th>Difficulty</th>
+                                <th>Questions Count</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for topic in mcq_topics %}
+                            <tr>
+                                <td><strong>{{ topic.topic }}</strong></td>
+                                <td>
+                                    <span class="difficulty-badge difficulty-{{ topic.difficulty_level|lower }}">
+                                        {{ topic.difficulty_level }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-weight: 600;">
+                                        {{ topic.question_count }} Questions
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn-view-questions" onclick="showQuestions('{{ topic.topic }}')">
+                                        <i class="fas fa-list"></i> View Questions
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    <!-- Questions Modal -->
+                    <div id="questionsModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h2 id="modalTopicTitle">Questions for Topic</h2>
+                            <div id="questionsList">
+                                <!-- Questions will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>No Topics Yet</h3>
+                        <p>Start by uploading your first topic using the form above.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="users-tab" class="tab-content">
+            <div class="users-section">
+                <div class="section-header">
+                    <h2 class="section-title">Registered Users</h2>
+                    <div class="section-count">{{ total_users }} Users</div>
+                </div>
+                
+                {% if users %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Contact</th>
+                                <th>Gender</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td><strong>{{ user.username }}</strong></td>
+                                <td>{{ user.contact }}</td>
+                                <td>{{ user.gender }}</td>
+                                <td>
+                                    <span style="color: #38a169; font-weight: 600;">
+                                        <i class="fas fa-check-circle"></i> Active
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>No Users Yet</h3>
+                        <p>Users will appear here once they register.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+        
+        // Get the modal
+        const modal = document.getElementById("questionsModal");
+        
+        // Get the <span> element that closes the modal
+        const span = document.getElementsByClassName("close")[0];
+        
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        // Function to show questions for a topic
+        function showQuestions(topicName) {
+            // Set the modal title
+            document.getElementById("modalTopicTitle").innerText = "Questions for " + topicName;
+            
+            // Show the modal
+            modal.style.display = "block";
+            
+            // Fetch questions for the topic
+            fetch(`/ui/api/questions/?topic=${encodeURIComponent(topicName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const questionsList = document.getElementById("questionsList");
+                    questionsList.innerHTML = "";
+                    
+                    if (data.length === 0) {
+                        questionsList.innerHTML = `<div class="no-questions">No questions found for this topic.</div>`;
+                        return;
+                    }
+                    
+                    data.forEach(question => {
+                        const correctOption = question.correct_answer;
+                        
+                        const questionItem = document.createElement("div");
+                        questionItem.className = "question-item";
+                        
+                        questionItem.innerHTML = `
+                            <div class="question-text">${question.question}</div>
+                            <div class="question-options">
+                                <div class="question-option ${correctOption === 'A' ? 'correct' : ''}">
+                                    <strong>A:</strong> ${question.option_a}
+                                </div>
+                                <div class="question-option ${correctOption === 'B' ? 'correct' : ''}">
+                                    <strong>B:</strong> ${question.option_b}
+                                </div>
+                                <div class="question-option ${correctOption === 'C' ? 'correct' : ''}">
+                                    <strong>C:</strong> ${question.option_c}
+                                </div>
+                                <div class="question-option ${correctOption === 'D' ? 'correct' : ''}">
+                                    <strong>D:</strong> ${question.option_d}
+                                </div>
+                            </div>
+                            <div class="question-answer">
+                                <strong>Correct Answer:</strong> ${correctOption}
+                            </div>
+                        `;
+                        
+                        questionsList.appendChild(questionItem);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching questions:", error);
+                    const questionsList = document.getElementById("questionsList");
+                    questionsList.innerHTML = `<div class="no-questions">Error loading questions. Please try again.</div>`;
+                });
+        }
+    </script>
+</body>
+</html>

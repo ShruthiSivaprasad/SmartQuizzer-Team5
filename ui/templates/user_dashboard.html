@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dashboard - Quiz Generator</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .quiz-generator, .quiz-display {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 300px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .question-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .options {
+            margin-top: 10px;
+        }
+        .option {
+            padding: 8px;
+            margin-bottom: 5px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .option:hover {
+            background-color: #f0f0f0;
+        }
+        .selected {
+            background-color: #e0f7fa;
+            border-color: #80deea;
+        }
+        .correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+            border-color: #e57373;
+        }
+        .result {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .hidden {
+            display: none;
+        }
+        #submit-quiz {
+            margin-top: 20px;
+        }
+        #loading {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz Generator</h1>
+    
+    <div class="container">
+        <div class="quiz-generator">
+            <h2>Generate a Quiz</h2>
+            <form id="quiz-form">
+                <div class="form-group">
+                    <label for="topic">Topic:</label>
+                    <select id="topic" name="topic" required>
+                        <option value="">Select a topic</option>
+                        <!-- Topics will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="difficulty_level">Difficulty Level:</label>
+                    <select id="difficulty_level" name="difficulty_level">
+                        <option value="">Any Difficulty</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="num_questions">Number of Questions:</label>
+                    <input type="number" id="num_questions" name="num_questions" min="1" max="20" value="5">
+                </div>
+                <button type="submit">Generate Quiz</button>
+            </form>
+        </div>
+        
+        <div class="quiz-display">
+            <h2>Your Quiz</h2>
+            <div id="loading" class="hidden">Loading questions...</div>
+            <div id="quiz-container" class="hidden">
+                <div id="questions-container">
+                    <!-- Questions will be populated here -->
+                </div>
+                <button id="submit-quiz" class="hidden">Submit Quiz</button>
+                <div id="quiz-results" class="result hidden"></div>
+            </div>
+            <div id="no-questions" class="hidden">
+                <p>No questions found for the selected criteria. Please try different options.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch available topics for the dropdown
+            fetchTopics();
+            
+            // Set up form submission
+            document.getElementById('quiz-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateQuiz();
+            });
+            
+            // Set up quiz submission
+            document.getElementById('submit-quiz').addEventListener('click', function() {
+                submitQuiz();
+            });
+        });
+        
+        function fetchTopics() {
+            fetch('/ui/api/topics/')
+                .then(response => response.json())
+                .then(data => {
+                    const topicSelect = document.getElementById('topic');
+                    // Clear existing options except the first one
+                    while (topicSelect.options.length > 1) {
+                        topicSelect.remove(1);
+                    }
+                    
+                    // Add new options
+                    data.forEach(topic => {
+                        const option = document.createElement('option');
+                        option.value = topic;
+                        option.textContent = topic;
+                        topicSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching topics:', error));
+        }
+        
+        function generateQuiz() {
+            const topic = document.getElementById('topic').value;
+            const difficulty = document.getElementById('difficulty_level').value;
+            const numQuestions = document.getElementById('num_questions').value;
+            
+            // Show loading indicator
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('no-questions').classList.add('hidden');
+            
+            // Build query parameters
+            let url = `/ui/api/quiz/?topic=${encodeURIComponent(topic)}&num_questions=${numQuestions}`;
+            if (difficulty) {
+                url += `&difficulty_level=${encodeURIComponent(difficulty)}`;
+            }
+            
+            // Fetch questions
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading indicator
+                    document.getElementById('loading').classList.add('hidden');
+                    
+                    if (data.length === 0) {
+                        // Show no questions message
+                        document.getElementById('no-questions').classList.remove('hidden');
+                    } else {
+                        // Display questions
+                        displayQuestions(data);
+                        document.getElementById('quiz-container').classList.remove('hidden');
+                        document.getElementById('submit-quiz').classList.remove('hidden');
+                        document.getElementById('quiz-results').classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error generating quiz:', error);
+                    document.getElementById('loading').classList.add('hidden');
+                    alert('Error generating quiz. Please try again.');
+                });
+        }
+        
+        function displayQuestions(questions) {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                questionCard.dataset.id = question.id;
+                questionCard.dataset.correctAnswer = question.correct_answer;
+                
+                questionCard.innerHTML = `
+                    <h3>Question ${index + 1}</h3>
+                    <p>${question.question}</p>
+                    <div class="options">
+                        <div class="option" data-value="A" onclick="selectOption(this)">
+                            <strong>A:</strong> ${question.option_a}
+                        </div>
+                        <div class="option" data-value="B" onclick="selectOption(this)">
+                            <strong>B:</strong> ${question.option_b}
+                        </div>
+                        <div class="option" data-value="C" onclick="selectOption(this)">
+                            <strong>C:</strong> ${question.option_c}
+                        </div>
+                        <div class="option" data-value="D" onclick="selectOption(this)">
+                            <strong>D:</strong> ${question.option_d}
+                        </div>
+                    </div>
+                    <div class="feedback hidden"></div>
+                `;
+                
+                container.appendChild(questionCard);
+            });
+        }
+        
+        function selectOption(optionElement) {
+            // Remove selected class from siblings
+            const options = optionElement.parentElement.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            optionElement.classList.add('selected');
+        }
+        
+        function submitQuiz() {
+            let score = 0;
+            const questionCards = document.querySelectorAll('.question-card');
+            const totalQuestions = questionCards.length;
+            
+            questionCards.forEach(card => {
+                const correctAnswer = card.dataset.correctAnswer;
+                const selectedOption = card.querySelector('.option.selected');
+                const feedbackDiv = card.querySelector('.feedback');
+                
+                // Reset previous feedback
+                card.querySelectorAll('.option').forEach(option => {
+                    option.classList.remove('correct', 'incorrect');
+                });
+                
+                if (selectedOption) {
+                    const userAnswer = selectedOption.dataset.value;
+                    
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        selectedOption.classList.add('correct');
+                        feedbackDiv.textContent = 'Correct!';
+                        feedbackDiv.style.color = 'green';
+                    } else {
+                        selectedOption.classList.add('incorrect');
+                        // Highlight the correct answer
+                        card.querySelector(`.option[data-value="${correctAnswer}"]`).classList.add('correct');
+                        feedbackDiv.textContent = `Incorrect. The correct answer is ${correctAnswer}.`;
+                        feedbackDiv.style.color = 'red';
+                    }
+                } else {
+                    // No answer selected
+                    card.querySelector(`.option[data-value="${correctAnswer}"]`).classList.add('correct');
+                    feedbackDiv.textContent = `Not answered. The correct answer is ${correctAnswer}.`;
+                    feedbackDiv.style.color = 'orange';
+                }
+                
+                feedbackDiv.classList.remove('hidden');
+            });
+            
+            // Display results
+            const resultsDiv = document.getElementById('quiz-results');
+            const percentage = Math.round((score / totalQuestions) * 100);
+            resultsDiv.textContent = `Your score: ${score}/${totalQuestions} (${percentage}%)`;
+            
+            if (percentage >= 80) {
+                resultsDiv.style.backgroundColor = '#c8e6c9';
+            } else if (percentage >= 60) {
+                resultsDiv.style.backgroundColor = '#fff9c4';
+            } else {
+                resultsDiv.style.backgroundColor = '#ffcdd2';
+            }
+            
+            resultsDiv.classList.remove('hidden');
+            document.getElementById('submit-quiz').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
